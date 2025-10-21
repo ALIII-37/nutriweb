@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriWeb - Detección y Seguimiento Nutricional Infantil</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f4faf4;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    header {
+      background-color: #43a047;
+      color: white;
+      text-align: center;
+      padding: 1.5rem 0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    main {
+      max-width: 700px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.7rem;
+      margin-top: 0.3rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    button {
+      margin-top: 1.5rem;
+      background-color: #43a047;
+      color: white;
+      padding: 0.8rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #2e7d32;
+    }
+
+    .resultado {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 10px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .rojo {
+      background-color: #ef5350;
+      color: white;
+    }
+
+    .amarillo {
+      background-color: #ffeb3b;
+      color: #444;
+    }
+
+    .verde {
+      background-color: #66bb6a;
+      color: white;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #e8f5e9;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>🌿 NutriWeb</h1>
+    <p>Apoyando a las comunidades en la detección temprana de la desnutrición infantil</p>
+  </header>
+
+  <main>
+    <h2>Registro del Niño o Niña</h2>
+
+    <form id="formulario">
+      <label>Nombre del niño o niña:</label>
+      <input type="text" id="nombre" required />
+
+      <label>Edad (años):</label>
+      <input type="number" id="edad" min="0" step="0.1" required />
+
+      <label>Peso (kg):</label>
+      <input type="number" id="peso" min="0" step="0.1" required />
+
+      <label>Talla (cm):</label>
+      <input type="number" id="talla" min="0" step="0.1" required />
+
+      <button type="button" onclick="calcularIMC()">Calcular IMC</button>
+    </form>
+
+    <div id="resultado" class="resultado" style="display:none;"></div>
+    <div id="recomendacion" style="margin-top: 1rem;"></div>
+  </main>
+
+  <footer>
+    © 2025 NutriWeb | Promoviendo la salud infantil con productos locales 🌽🥦
+  </footer>
+
+  <script>
+    function calcularIMC() {
+      const nombre = document.getElementById("nombre").value;
+      const edad = parseFloat(document.getElementById("edad").value);
+      const peso = parseFloat(document.getElementById("peso").value);
+      const talla = parseFloat(document.getElementById("talla").value) / 100;
+
+      if (!nombre || !edad || !peso || !talla) {
+        alert("Por favor, complete todos los campos.");
+        return;
+      }
+
+      const imc = peso / (talla * talla);
+      let estado = "";
+      let color = "";
+      let recomendacion = "";
+
+      if (imc < 14) {
+        estado = "Desnutrición";
+        color = "rojo";
+        recomendacion = "Incluya alimentos ricos en proteínas locales como frijoles, huevos y atol de maíz. Aumente la frecuencia de comidas.";
+      } else if (imc >= 14 && imc < 17) {
+        estado = "Riesgo de desnutrición";
+        color = "amarillo";
+        recomendacion = "Vigile su alimentación. Asegure frutas, verduras y cereales locales. Promueva la higiene antes de cada comida.";
+      } else {
+        estado = "Nutrición adecuada";
+        color = "verde";
+        recomendacion = "Mantenga una dieta equilibrada con verduras, legumbres y frutas locales. Fomente la actividad física y el lavado de manos.";
+      }
+
+      const resultado = document.getElementById("resultado");
+      resultado.style.display = "block";
+      resultado.className = `resultado ${color}`;
+      resultado.innerHTML = `${nombre}, su IMC es <strong>${imc.toFixed(1)}</strong> (${estado}).`;
+
+      document.getElementById("recomendacion").innerHTML = `<p><strong>Recomendación:</strong> ${recomendacion}</p>`;
+    }
+  </script>
+</body>
+</html>
