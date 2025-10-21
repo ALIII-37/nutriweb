@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NutriWeb - Detección y Seguimiento Nutricional Infantil</title>
-  <link rel="stylesheet" href="style.css" />
   <style>
     body {
       font-family: "Poppins", sans-serif;
@@ -20,11 +19,6 @@
       text-align: center;
       padding: 1.5rem 0;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 1.8rem;
     }
 
     main {
@@ -75,20 +69,9 @@
       text-align: center;
     }
 
-    .rojo {
-      background-color: #ef5350;
-      color: white;
-    }
-
-    .amarillo {
-      background-color: #ffeb3b;
-      color: #444;
-    }
-
-    .verde {
-      background-color: #66bb6a;
-      color: white;
-    }
+    .rojo { background-color: #ef5350; color: white; }
+    .amarillo { background-color: #ffeb3b; color: #444; }
+    .verde { background-color: #66bb6a; color: white; }
 
     footer {
       text-align: center;
@@ -97,6 +80,39 @@
       background: #e8f5e9;
       font-size: 0.9rem;
     }
+
+    /* --- Semáforo --- */
+    .semaforo {
+      width: 80px;
+      height: 200px;
+      background: #222;
+      border-radius: 20px;
+      margin: 1.5rem auto;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .luz {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #555;
+      opacity: 0.3;
+      transition: all 0.5s ease;
+    }
+
+    .activo {
+      opacity: 1;
+      box-shadow: 0 0 20px currentColor;
+    }
+
+    .roja { color: #ef5350; background: #ef5350; }
+    .amarilla { color: #ffeb3b; background: #ffeb3b; }
+    .verde-luz { color: #66bb6a; background: #66bb6a; }
   </style>
 </head>
 
@@ -125,6 +141,13 @@
       <button type="button" onclick="calcularIMC()">Calcular IMC</button>
     </form>
 
+    <!-- Semáforo visual -->
+    <div class="semaforo">
+      <div id="luz-roja" class="luz roja"></div>
+      <div id="luz-amarilla" class="luz amarilla"></div>
+      <div id="luz-verde" class="luz verde-luz"></div>
+    </div>
+
     <div id="resultado" class="resultado" style="display:none;"></div>
     <div id="recomendacion" style="margin-top: 1rem;"></div>
   </main>
@@ -134,43 +157,75 @@
   </footer>
 
   <script>
-    function calcularIMC() {
-      const nombre = document.getElementById("nombre").value;
-      const edad = parseFloat(document.getElementById("edad").value);
-      const peso = parseFloat(document.getElementById("peso").value);
-      const talla = parseFloat(document.getElementById("talla").value) / 100;
+  function calcularIMC() {
+    const nombre = document.getElementById("nombre").value;
+    const edad = parseFloat(document.getElementById("edad").value);
+    const peso = parseFloat(document.getElementById("peso").value);
+    const talla = parseFloat(document.getElementById("talla").value) / 100;
 
-      if (!nombre || !edad || !peso || !talla) {
-        alert("Por favor, complete todos los campos.");
-        return;
-      }
+    if (!nombre || !edad || !peso || !talla) {
+      alert("Por favor, complete todos los campos.");
+      return;
+    }
 
-      const imc = peso / (talla * talla);
-      let estado = "";
-      let color = "";
-      let recomendacion = "";
+    const imc = peso / (talla * talla);
+    let estado = "";
+    let color = "";
+    let recomendacion = "";
 
+    // RANGOS orientativos
+    if (edad < 2) {
+      estado = "Edad fuera de rango (mínimo 2 años)";
+      color = "amarillo";
+      recomendacion = "Use este sistema solo para mayores de 2 años.";
+    } else {
       if (imc < 14) {
         estado = "Desnutrición";
         color = "rojo";
-        recomendacion = "Incluya alimentos ricos en proteínas locales como frijoles, huevos y atol de maíz. Aumente la frecuencia de comidas.";
-      } else if (imc >= 14 && imc < 17) {
+        recomendacion = "El niño presenta bajo peso. Refuerce la dieta con proteínas locales (frijoles, huevo, atol de maíz) y acuda a control médico.";
+      } else if (imc >= 14 && imc < 16) {
         estado = "Riesgo de desnutrición";
         color = "amarillo";
-        recomendacion = "Vigile su alimentación. Asegure frutas, verduras y cereales locales. Promueva la higiene antes de cada comida.";
-      } else {
+        recomendacion = "El niño está en riesgo. Aumente porciones nutritivas, agua segura y revise su crecimiento frecuentemente.";
+      } else if (imc >= 16 && imc <= 18) {
         estado = "Nutrición adecuada";
         color = "verde";
-        recomendacion = "Mantenga una dieta equilibrada con verduras, legumbres y frutas locales. Fomente la actividad física y el lavado de manos.";
+        recomendacion = "El peso y talla son adecuados. Mantenga una dieta variada con verduras, legumbres y frutas locales.";
+      } else if (imc > 18 && imc <= 20) {
+        estado = "Riesgo de sobrepeso";
+        color = "amarillo";
+        recomendacion = "Evite comidas con azúcar o grasa en exceso. Promueva actividad física diaria.";
+      } else {
+        estado = "Sobrepeso u obesidad";
+        color = "rojo";
+        recomendacion = "Reduzca alimentos procesados y azucarados. Fomente ejercicio y comidas caseras saludables.";
       }
-
-      const resultado = document.getElementById("resultado");
-      resultado.style.display = "block";
-      resultado.className = `resultado ${color}`;
-      resultado.innerHTML = `${nombre}, su IMC es <strong>${imc.toFixed(1)}</strong> (${estado}).`;
-
-      document.getElementById("recomendacion").innerHTML = `<p><strong>Recomendación:</strong> ${recomendacion}</p>`;
     }
+
+    // Actualizar texto de resultado
+    const resultado = document.getElementById("resultado");
+    resultado.style.display = "block";
+    resultado.className = `resultado ${color}`;
+    resultado.innerHTML = `${nombre}, su IMC es <strong>${imc.toFixed(1)}</strong> (${estado}).`;
+
+    document.getElementById("recomendacion").innerHTML =
+      `<p><strong>Recomendación:</strong> ${recomendacion}</p>`;
+
+    // Actualizar luces del semáforo
+    const luces = {
+      rojo: document.getElementById("luz-roja"),
+      amarillo: document.getElementById("luz-amarilla"),
+      verde: document.getElementById("luz-verde")
+    };
+
+    // Reiniciar luces
+    Object.values(luces).forEach(l => l.classList.remove("activo"));
+
+    if (color === "rojo") luces.rojo.classList.add("activo");
+    else if (color === "amarillo") luces.amarillo.classList.add("activo");
+    else if (color === "verde") luces.verde.classList.add("activo");
+  }
   </script>
 </body>
 </html>
+
